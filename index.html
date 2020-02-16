@@ -1,0 +1,14 @@
+cryptsetup --verbose --verify-passphrase luksFormat /dev/sdb3  #加密分区 设置密码
+
+cryptsetup luksOpen /dev/sdb3 my_usb #打开这个分区
+
+mkfs.ext3 /dev/mapper/my_usb
+e2label /dev/mapper/my_usb persistence #创建一个ext4文件系统
+
+mkdir -p /mnt/my_usb
+mount /dev/mapper/my_usb /mnt/my_usb
+echo "/ union" > /mnt/my_usb/persistence.conf
+
+umount /dev/mapper/my_usb
+cryptsetup luksClose /dev/mapper/my_usb  #挂载分区并创建persistence.conf
+以便更改在重新引导后仍然存在
